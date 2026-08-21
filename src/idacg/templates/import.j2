@@ -1,0 +1,10 @@
+UNWIND {{ functions | cypher }} AS row
+MERGE (n:Function {id: row.id})
+SET n += row;
+
+UNWIND {{ calls | cypher }} AS row
+MATCH (src:Function {id: row.src})
+MATCH (dst:Function {id: row.dst})
+MERGE (src)-[e:CALLS]->(dst)
+SET e += row
+REMOVE e.src, e.dst;
