@@ -4,7 +4,6 @@ from pathlib import Path
 import sys
 
 from . import bridge
-from . import lbug as _lbug
 
 
 def dump(database: str, output: str):
@@ -53,10 +52,6 @@ def search(database: str, query: str):
             writer.writerow(values)
 
 
-def lbug(input: str):
-    print(_lbug.setup(input))
-
-
 def main() -> None:
     parser = ArgumentParser()
     subparsers = parser.add_subparsers(dest="command")
@@ -69,9 +64,6 @@ def main() -> None:
     search_parser.add_argument("database")
     search_parser.add_argument("query")
 
-    lbug_parser = subparsers.add_parser("lbug")
-    lbug_parser.add_argument("input")
-
     args = parser.parse_args()
 
     match args.command:
@@ -80,9 +72,6 @@ def main() -> None:
 
         case "search":
             search(args.database, args.query)
-
-        case "lbug":
-            lbug(args.input)
 
         case _:
             parser.print_help()
