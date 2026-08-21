@@ -7,6 +7,7 @@ from typing import Iterator
 from .query import Lark_StandAlone, Transformer
 
 CLANG = Language(tree_sitter_c.language())
+PARSER = Parser(CLANG)
 
 
 class ToTreeSitterQuery(Transformer):
@@ -55,9 +56,8 @@ def compile(dsl: str) -> Query:
 
 
 def search(query: Query, source: str) -> Iterator[dict[str, str | int | None]]:
-    parser = Parser(CLANG)
     source = source.encode()
-    tree = parser.parse(source)
+    tree = PARSER.parse(source)
     cursor = QueryCursor(query)
     keys = [query.capture_name(i) for i in range(query.capture_count)]
     keys = [key for key in keys if not key.startswith("__")]
