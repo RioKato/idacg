@@ -63,6 +63,10 @@ def render(template: str, vars: list[str]):
     print(cypher)
 
 
+def show():
+    print(renderer.show())
+
+
 def main() -> None:
     parser = ArgumentParser()
     subparsers = parser.add_subparsers(dest="command")
@@ -79,6 +83,8 @@ def main() -> None:
     render_parser.add_argument("template")
     render_parser.add_argument("vars", nargs="*")
 
+    show_parser = subparsers.add_parser("show")
+
     args = parser.parse_args()
 
     match args.command:
@@ -90,6 +96,9 @@ def main() -> None:
 
         case "render":
             render(args.template, args.vars)
+
+        case "show":
+            show()
 
         case _:
             parser.print_help()

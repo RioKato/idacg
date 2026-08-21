@@ -53,3 +53,14 @@ def render(path: str, **args) -> str:
 
     template = environment.get_template(name)
     return template.render(**args)
+
+
+def show() -> str:
+    environment = Environment(loader=PackageLoader(__package__, "templates"))
+    text = ""
+
+    for name in environment.list_templates():
+        source, _, _ = environment.loader.get_source(environment, name)
+        text += f"# {name}\n\n```cypher\n{source.rstrip()}\n```\n\n"
+
+    return text
