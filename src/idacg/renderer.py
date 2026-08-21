@@ -44,7 +44,7 @@ def render(path: str, **args) -> str:
         name = str(path)
 
         if not name.endswith(".j2"):
-            name += ".j2"
+            name = f"{name}.j2"
 
     environment = Environment(loader=loader)
 
