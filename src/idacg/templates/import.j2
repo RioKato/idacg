@@ -8,3 +8,9 @@ MATCH (dst:Function {id: row.dst})
 MERGE (src)-[e:CALLS]->(dst)
 SET e += row
 REMOVE e.src, e.dst;
+
+MATCH (i:Function), (e:Function)
+WHERE e.export = true
+  AND i.name STARTS WITH '.'
+  AND SUBSTRING(i.name, 2) = e.name
+MERGE (i)-[:RESOLVE]->(e);
