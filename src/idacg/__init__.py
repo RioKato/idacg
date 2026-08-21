@@ -3,7 +3,7 @@ from dataclasses import asdict
 import json
 from pathlib import Path
 
-from . import bridge
+from . import bridge, renderer
 
 
 def dump(database: str, output: str):
@@ -34,6 +34,11 @@ def search(database: str, query: str):
             print(jsonl)
 
 
+def render(template: str):
+    cypher = renderer.render(template)
+    print(cypher)
+
+
 def main() -> None:
     parser = ArgumentParser()
     subparsers = parser.add_subparsers(dest="command")
@@ -46,6 +51,9 @@ def main() -> None:
     search_parser.add_argument("database")
     search_parser.add_argument("query")
 
+    render_parser = subparsers.add_parser("render")
+    render_parser.add_argument("template")
+
     args = parser.parse_args()
 
     match args.command:
@@ -54,6 +62,9 @@ def main() -> None:
 
         case "search":
             search(args.database, args.query)
+
+        case "render":
+            render(args.template)
 
         case _:
             parser.print_help()
