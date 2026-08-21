@@ -1,0 +1,15 @@
+UNWIND {{ sources | cypher }} AS s
+UNWIND {{ sinks | cypher }} AS t
+
+MATCH (src:Function {id: s.id})
+MATCH (sink:Function {id: t.id})
+
+MATCH p = (src)-[:CALLS|RESOLVE*1..{{ depth }}]->(sink)
+
+WHERE NONE(
+    n IN nodes(p)
+    WHERE n.id IN {{ avoids | map(attribute="id") | list | cypher }}
+)
+
+RETURN p
+ORDER BY length(p);
