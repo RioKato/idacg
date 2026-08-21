@@ -15,13 +15,13 @@ def dump(database: str, output: str):
 
     with open(f"{output}.func.jsonl", "w") as fd:
         for func in funcs:
-            jsonl = json.dumps(asdict(func))
-            fd.write(jsonl + "\n")
+            line = json.dumps(asdict(func))
+            fd.write(f"{line}\n")
 
     with open(f"{output}.call.jsonl", "w") as fd:
         for src, dst in calls:
-            jsonl = json.dumps(dict(src=src, dst=dst))
-            fd.write(jsonl + "\n")
+            line = json.dumps(dict(src=src, dst=dst))
+            fd.write(f"{line}\n")
 
 
 def search(database: str, query: str):
@@ -30,22 +30,30 @@ def search(database: str, query: str):
 
     with bridge.use_database(database):
         for result in bridge.search(query):
-            jsonl = json.dumps(result)
-            print(jsonl)
+            line = json.dumps(result)
+            print(line)
 
 
 def render(template: str, vars: list[str]):
     args = {}
 
     for var in vars:
-        name, _, value = var.partition("=")
+        name, sep, value = var.partition("=")
+
+        if not sep:
+            raise ValueError(f"expected name=value")
 
         if value.startswith("@"):
             obj = []
 
             with open(value[1:]) as fd:
-                for jsonl in fd:
-                    obj.append(json.loads(jsonl))
+                for line in fd:
+                    line = line.strip()
+
+                    if not line:
+                        continue
+
+                    obj.append(json.loads(line))
         else:
             obj = json.loads(value)
 
