@@ -43,7 +43,7 @@ class Function:
     export: bool
 
 
-def dump() -> tuple[list[Function], set[str]]:
+def dump() -> tuple[list[Function], set[tuple[str, str]]]:
     generator = IDGenerator()
     file = ida_nalt.get_root_filename()
     exports = {ea for _, _, ea, _ in idautils.Entries()}

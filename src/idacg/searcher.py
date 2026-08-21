@@ -56,7 +56,8 @@ def compile(dsl: str) -> Query:
 
 def search(query: Query, source: str) -> Iterator[dict[str, str | int | None]]:
     parser = Parser(CLANG)
-    tree = parser.parse(source.encode())
+    source = source.encode()
+    tree = parser.parse(source)
     cursor = QueryCursor(query)
     keys = [query.capture_name(i) for i in range(query.capture_count)]
     keys = [key for key in keys if not key.startswith("__")]
@@ -69,10 +70,10 @@ def search(query: Query, source: str) -> Iterator[dict[str, str | int | None]]:
                 if name in keys:
                     match node.type:
                         case "string_literal":
-                            text = source[node.start_byte : node.end_byte]
+                            text = source[node.start_byte : node.end_byte].decode()
                             result[name] = json.loads(text)
                         case "number_literal":
-                            text = source[node.start_byte : node.end_byte]
+                            text = source[node.start_byte : node.end_byte].decode()
                             result[name] = int(text, 0)
 
         yield result
