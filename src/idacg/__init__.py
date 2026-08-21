@@ -34,8 +34,24 @@ def search(database: str, query: str):
             print(jsonl)
 
 
-def render(template: str):
-    cypher = renderer.render(template)
+def render(template: str, vars: list[str]):
+    args = {}
+
+    for var in vars:
+        name, _, value = var.partition("=")
+
+        if value.startswith("@"):
+            obj = []
+
+            with open(value[1:]) as fd:
+                for jsonl in fd:
+                    obj.append(json.loads(jsonl))
+        else:
+            obj = json.loads(value)
+
+        args[name] = obj
+
+    cypher = renderer.render(template, **args)
     print(cypher)
 
 
@@ -53,6 +69,7 @@ def main() -> None:
 
     render_parser = subparsers.add_parser("render")
     render_parser.add_argument("template")
+    render_parser.add_argument("vars", nargs="*")
 
     args = parser.parse_args()
 
@@ -64,7 +81,7 @@ def main() -> None:
             search(args.database, args.query)
 
         case "render":
-            render(args.template)
+            render(args.template, args.vars)
 
         case _:
             parser.print_help()
