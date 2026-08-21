@@ -10,9 +10,9 @@ IDENTIFIER = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 
 
 def cypher(value: Any) -> str:
-    COMPAT = [bool, str, int]
+    COMPAT = (bool, str, int, float)
 
-    if any(isinstance(value, _type) for _type in COMPAT):
+    if value is None or isinstance(value, COMPAT):
         return json.dumps(value)
 
     if isinstance(value, list):
