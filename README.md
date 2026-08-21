@@ -12,7 +12,7 @@ uv run --group build python script/gen.py
 
 read & write jsonl
 
-```
+```sql
 COPY (
     SELECT *
     FROM read_ndjson_auto('functions.jsonl')
