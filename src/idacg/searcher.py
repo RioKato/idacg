@@ -10,6 +10,10 @@ CLANG = Language(tree_sitter_c.language())
 
 
 class ToTreeSitterQuery(Transformer):
+    def __init__(self):
+        super().__init__()
+        self.counter = 0
+
     def start(self, items):
         return items[0]
 
@@ -22,11 +26,15 @@ class ToTreeSitterQuery(Transformer):
 
     def string_literal(self, items):
         value = json.dumps(str(items[0]))
-        return f"(string_literal) @__str (#eq? @__str {value})"
+        self.counter += 1
+        cap = f"@__str{self.counter}"
+        return f"(string_literal) {cap} (#eq? {cap} {value})"
 
     def number_literal(self, items):
         value = str(items[0])
-        return f'(number_literal) @__num (#eq? @__num "{value}")'
+        self.counter += 1
+        cap = f"@__num{self.counter}"
+        return f'(number_literal) {cap} (#eq? {cap} "{value}")'
 
     def args(self, items):
         return list(items)
@@ -35,7 +43,9 @@ class ToTreeSitterQuery(Transformer):
         name = str(items[0])
         args = items[1] if len(items) > 1 else []
         args_query = " ".join(args)
-        return f'(call_expression function: (identifier) @__func arguments: (argument_list {args_query}) (#eq? @__func "{name}"))'
+        self.counter += 1
+        cap = f"@__func{self.counter}"
+        return f'(call_expression function: (identifier) {cap} arguments: (argument_list {args_query}) (#eq? {cap} "{name}"))'
 
 
 def compile(dsl: str) -> Query:
