@@ -1,4 +1,4 @@
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, PackageLoader
 
 import json
 from pathlib import Path
@@ -13,7 +13,7 @@ def cypher(value: Any) -> str:
     COMPAT = (bool, str, int, float)
 
     if value is None or isinstance(value, COMPAT):
-        return json.dumps(value)
+        return json.dumps(value, allow_nan=False)
 
     if isinstance(value, list):
         inner = (cypher(e) for e in value)
@@ -35,10 +35,21 @@ FILTERS = [cypher]
 
 def render(path: str, **args) -> str:
     path = Path(path)
-    environment = Environment(loader=FileSystemLoader(path.parent))
+
+    if path.is_file():
+        loader = FileSystemLoader(path.parent)
+        name = path.name
+    else:
+        loader = PackageLoader(__package__, "templates")
+        name = str(path)
+
+        if not name.endswith(".j2"):
+            name += ".j2"
+
+    environment = Environment(loader=loader)
 
     for filter in FILTERS:
         environment.filters[filter.__name__] = filter
 
-    template = environment.get_template(path.name)
+    template = environment.get_template(name)
     return template.render(**args)
