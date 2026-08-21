@@ -9,7 +9,7 @@ import ida_xref
 
 from contextlib import contextmanager
 from dataclasses import dataclass
-from pathlib import Path
+from typing import Iterator
 
 from . import searcher
 
@@ -43,7 +43,7 @@ class Function:
     export: bool
 
 
-def dump() -> Tuple[List[Function], Set[str]]:
+def dump() -> tuple[list[Function], set[str]]:
     generator = IDGenerator()
     file = ida_nalt.get_root_filename()
     exports = {ea for _, _, ea, _ in idautils.Entries()}
@@ -80,7 +80,7 @@ def dump() -> Tuple[List[Function], Set[str]]:
     return list(funcs.values()), calls
 
 
-def search(dsl: str) -> Iterator[Dict[str, str | int | None]]:
+def search(dsl: str) -> Iterator[dict[str, str | int | None]]:
     generator = IDGenerator()
     query = searcher.compile(dsl)
 

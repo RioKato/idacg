@@ -2,6 +2,7 @@ from tree_sitter import Language, Parser, Query, QueryCursor
 import tree_sitter_c
 
 import json
+from typing import Iterator
 
 from .query import Lark_StandAlone, Transformer
 
