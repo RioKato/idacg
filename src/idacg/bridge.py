@@ -92,7 +92,12 @@ def search(dsl: str) -> Iterator[Dict[str, str | int | None]]:
 
         source = str(source)
         id = generator.generate(ea)
+        name = ida_funcs.get_func_name(ea)
+        file = ida_nalt.get_root_filename()
 
         for result in searcher.search(query, source):
             result["id"] = id
+            result["name"] = name
+            result["file"] = file
+            result["address"] = ea
             yield result

@@ -9,18 +9,16 @@ from . import bridge
 def dump(database: str, output: str):
     database = Path(database).resolve()
     database = str(database)
-    output = Path(output)
-    output.mkdir(parents=True, exist_ok=True)
 
     with bridge.use_database(database):
         funcs, calls = bridge.dump()
 
-    with open(output / "functions.jsonl", "w") as fd:
+    with open(f"{output}.func.jsonl", "w") as fd:
         for func in funcs:
             jsonl = json.dumps(asdict(func))
             fd.write(jsonl + "\n")
 
-    with open(output / "calls.jsonl", "w") as fd:
+    with open(f"{output}.call.jsonl", "w") as fd:
         for src, dst in calls:
             jsonl = json.dumps(dict(src=src, dst=dst))
             fd.write(jsonl + "\n")
