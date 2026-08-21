@@ -10,14 +10,7 @@ uv run --group build python script/gen.py
 
 ### DuckDB
 
-read jsonl
-
-```sql
-SELECT *
-FROM read_ndjson_auto('functions.jsonl');
-```
-
-write jsonl
+read & write jsonl
 
 ```
 COPY (
