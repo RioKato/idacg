@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
-import csv
+from dataclasses import asdict
+import json
 from pathlib import Path
-import sys
 
 from . import bridge
 
@@ -15,41 +15,25 @@ def dump(database: str, output: str):
     with bridge.use_database(database):
         funcs, calls = bridge.dump()
 
-    with open(output / "functions.csv", "w") as fd:
-        writer = csv.writer(fd)
-        writer.writerow(["id", "name", "file", "address", "export"])
-
+    with open(output / "functions.jsonl", "w") as fd:
         for func in funcs:
-            writer.writerow([func.id, func.name, func.file, func.address, func.export])
+            jsonl = json.dumps(asdict(func))
+            fd.write(jsonl + "\n")
 
-    with open(output / "calls.csv", "w") as fd:
-        writer = csv.writer(fd)
-        writer.writerow(["caller", "callee"])
-
-        for caller, callee in calls:
-            writer.writerow([caller, callee])
+    with open(output / "calls.jsonl", "w") as fd:
+        for src, dst in calls:
+            jsonl = json.dumps(dict(src=src, dst=dst))
+            fd.write(jsonl + "\n")
 
 
 def search(database: str, query: str):
     database = Path(database).resolve()
     database = str(database)
 
-    writer = csv.writer(sys.stdout)
-    init = True
-    keys = []
-
     with bridge.use_database(database):
         for result in bridge.search(query):
-            if init:
-                init = False
-                keys = result.keys()
-                keys = list(keys)
-                keys.remove("id")
-                keys.insert(0, "id")
-                writer.writerow(keys)
-
-            values = [result[key] for key in keys]
-            writer.writerow(values)
+            jsonl = json.dumps(result)
+            print(jsonl)
 
 
 def main() -> None:
