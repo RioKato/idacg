@@ -1,0 +1,17 @@
+start: call
+
+call: NAME "(" [args] ")"
+args: arg ("," arg)*
+
+?arg: VARIABLE -> capture
+    | "*"      -> wildcard
+    | STRING   -> string_literal
+    | NUMBER   -> number_literal
+
+VARIABLE: "$" NAME
+NAME: /[a-zA-Z_][a-zA-Z0-9_]*/
+STRING: /"([^"\\]|\\.)*"/
+NUMBER: /0x[0-9a-fA-F]+|[0-9]+/
+
+%import common.WS
+%ignore WS
