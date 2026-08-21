@@ -7,8 +7,8 @@ MATCH (sink:Function {id: t.id})
 MATCH p = (src)-[:CALLS|RESOLVE*1..{{ depth }}]->(sink)
 
 WHERE NONE(
-    n IN nodes(p)
-    WHERE n.id IN {{ avoids | map(attribute="id") | list | cypher }}
+  n IN nodes(p)
+  WHERE n.id IN {{ avoids | map(attribute="id") | list | cypher }}
 )
 
 RETURN p
