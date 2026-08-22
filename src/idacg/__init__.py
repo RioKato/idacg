@@ -11,6 +11,7 @@ except ImportError:
     bridge = None
 
 from . import renderer
+from . import searcher
 
 
 def init():
@@ -42,13 +43,7 @@ def dump(database: str, output: str):
 
 
 def search(database: str, query: str):
-    database = Path(database).resolve()
-    database = str(database)
-
-    with bridge.use_database(database):
-        for result in bridge.search(query):
-            line = json.dumps(result)
-            print(line)
+    pass
 
 
 def render(template: str, vars: list[str]):

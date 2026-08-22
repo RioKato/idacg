@@ -83,26 +83,3 @@ def dump() -> tuple[list[Function], set[tuple[str, str]]]:
             calls.add((generator.generate(caller), calleef.id))
 
     return funcs, calls
-
-
-def search(dsl: str) -> Iterator[dict[str, str | int | None]]:
-    generator = IDGenerator()
-    query = searcher.compile(dsl)
-
-    for ea in idautils.Functions():
-        try:
-            source = ida_hexrays.decompile(ea)
-        except ida_hexrays.DecompilationFailure:
-            continue
-
-        source = str(source)
-        id = generator.generate(ea)
-        name = ida_funcs.get_func_name(ea)
-        file = ida_nalt.get_root_filename()
-
-        for result in searcher.search(query, source):
-            result["id"] = id
-            result["name"] = name
-            result["file"] = file
-            result["address"] = ea
-            yield result
