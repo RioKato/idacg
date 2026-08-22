@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 from dataclasses import asdict
-from glob import glob
+from glob import iglob
 import json
 from pathlib import Path
 
@@ -46,12 +46,8 @@ def render(template: str, vars: list[str]):
 
         if value.startswith("@"):
             obj = []
-            paths = glob(value[1:], recursive=True)
 
-            if not paths:
-                raise ValueError(f"no files matched")
-
-            for path in paths:
+            for path in iglob(value[1:], recursive=True):
                 with open(path) as fd:
                     for line in fd:
                         line = line.strip()
