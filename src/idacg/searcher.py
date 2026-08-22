@@ -27,14 +27,14 @@ class ToTreeSitterQuery(Transformer):
 
     def string_literal(self, items):
         value = json.dumps(str(items[0]))
-        self.counter += 1
         cap = f"@__str{self.counter}"
+        self.counter += 1
         return f"(string_literal) {cap} (#eq? {cap} {value})"
 
     def number_literal(self, items):
         value = str(items[0])
-        self.counter += 1
         cap = f"@__num{self.counter}"
+        self.counter += 1
         return f'(number_literal) {cap} (#eq? {cap} "{value}")'
 
     def args(self, items):
@@ -44,8 +44,8 @@ class ToTreeSitterQuery(Transformer):
         name = str(items[0])
         args = items[1] if len(items) > 1 else []
         args_query = " ".join(args)
-        self.counter += 1
         cap = f"@__func{self.counter}"
+        self.counter += 1
         return f'(call_expression function: (identifier) {cap} arguments: (argument_list {args_query}) (#eq? {cap} "{name}"))'
 
 
