@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 from dataclasses import asdict
+from glob import glob
 import json
 from pathlib import Path
 
@@ -45,15 +46,20 @@ def render(template: str, vars: list[str]):
 
         if value.startswith("@"):
             obj = []
+            paths = glob(value[1:], recursive=True)
 
-            with open(value[1:]) as fd:
-                for line in fd:
-                    line = line.strip()
+            if not paths:
+                raise ValueError(f"no files matched")
 
-                    if not line:
-                        continue
+            for path in paths:
+                with open(path) as fd:
+                    for line in fd:
+                        line = line.strip()
 
-                    obj.append(json.loads(line))
+                        if not line:
+                            continue
+
+                        obj.append(json.loads(line))
         else:
             obj = json.loads(value)
 
