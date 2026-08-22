@@ -51,8 +51,7 @@ def render(path: str, **args) -> str:
     for filter in FILTERS:
         environment.filters[filter.__name__] = filter
 
-    template = environment.get_template(name)
-    return template.render(**args)
+    return environment.get_template(name).render(**args)
 
 
 def show() -> str:
