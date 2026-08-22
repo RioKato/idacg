@@ -4,7 +4,12 @@ from glob import iglob
 import json
 from pathlib import Path
 
-from . import bridge, renderer
+try:
+    from . import bridge
+except ImportError:
+    bridge = None
+
+from . import renderer
 
 
 def dump(database: str, output: str):
@@ -73,13 +78,14 @@ def main() -> None:
     parser = ArgumentParser()
     subparsers = parser.add_subparsers(dest="command")
 
-    dump_parser = subparsers.add_parser("dump")
-    dump_parser.add_argument("database")
-    dump_parser.add_argument("output")
+    if bridge:
+        dump_parser = subparsers.add_parser("dump")
+        dump_parser.add_argument("database")
+        dump_parser.add_argument("output")
 
-    search_parser = subparsers.add_parser("search")
-    search_parser.add_argument("database")
-    search_parser.add_argument("query")
+        search_parser = subparsers.add_parser("search")
+        search_parser.add_argument("database")
+        search_parser.add_argument("query")
 
     render_parser = subparsers.add_parser("render")
     render_parser.add_argument("template")
