@@ -47,7 +47,7 @@ def search(query: str, paths: str):
         with open(path) as fd:
             for obj in jsonl.reader(fd):
                 if "code" not in obj:
-                    raise ValueError(f"missing code")
+                    raise ValueError("missing code")
 
                 if obj["code"] is None:
                     continue
