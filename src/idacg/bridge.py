@@ -7,7 +7,7 @@ import ida_hexrays
 import ida_nalt
 import ida_xref
 
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from dataclasses import dataclass
 from typing import Iterator
 
@@ -41,6 +41,7 @@ class Function:
     file: str
     address: int
     export: bool
+    code: str | None
 
 
 def dump() -> tuple[list[Function], set[tuple[str, str]]]:
@@ -48,21 +49,27 @@ def dump() -> tuple[list[Function], set[tuple[str, str]]]:
     file = ida_nalt.get_root_filename()
     exports = {ea for _, _, ea, _ in idautils.Entries()}
 
-    def create_func(ea):
+    def function(ea: int) -> Function:
+        code = None
+
+        with suppress(ida_hexrays.DecompilationFailure):
+            code = str(ida_hexrays.decompile(ea))
+
         return Function(
             id=generator.generate(ea),
             name=ida_funcs.get_func_name(ea),
             file=file,
             address=ea,
             export=ea in exports,
+            code=code,
         )
 
-    funcs = {}
+    funcs = []
     calls = set()
 
     for callee in idautils.Functions():
-        calleef = create_func(callee)
-        funcs[calleef.id] = calleef
+        calleef = function(callee)
+        funcs.append(calleef)
 
         for xref in idautils.XrefsTo(callee):
             if xref.type not in (ida_xref.fl_CF, ida_xref.fl_CN):
@@ -70,14 +77,12 @@ def dump() -> tuple[list[Function], set[tuple[str, str]]]:
 
             caller = ida_funcs.get_func_start(xref.frm)
 
-            if caller is None:
+            if caller == ida_idaapi.BADADDR:
                 continue
 
-            callerf = create_func(caller)
-            funcs[callerf.id] = callerf
-            calls.add((callerf.id, calleef.id))
+            calls.add((generator.generate(caller), calleef.id))
 
-    return list(funcs.values()), calls
+    return funcs, calls
 
 
 def search(dsl: str) -> Iterator[dict[str, str | int | None]]:
