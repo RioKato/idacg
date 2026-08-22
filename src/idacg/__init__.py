@@ -4,6 +4,7 @@ from glob import iglob
 from importlib.resources import files
 import json
 from pathlib import Path
+import sys
 
 try:
     from . import bridge
@@ -39,8 +40,23 @@ def dump(database: str, output: str):
             jsonl.write(fd, dict(src=src, dst=dst))
 
 
-def search(database: str, query: str):
-    pass
+def search(query: str, paths: str):
+    query = searcher.compile(query)
+
+    for path in iglob(paths, recursive=True):
+        with open(path) as fd:
+            for obj in jsonl.reader(fd):
+                if "code" not in obj:
+                    raise ValueError(f"missing code")
+
+                if obj["code"] is None:
+                    continue
+
+                for result in searcher.search(query, obj["code"]):
+                    for k, v in result.items():
+                        obj[k] = v
+
+                    jsonl.write(sys.stdout, obj)
 
 
 def render(template: str, vars: list[str]):
@@ -83,9 +99,9 @@ def main() -> None:
         dump_parser.add_argument("database")
         dump_parser.add_argument("output")
 
-        search_parser = subparsers.add_parser("search")
-        search_parser.add_argument("database")
-        search_parser.add_argument("query")
+    search_parser = subparsers.add_parser("search")
+    search_parser.add_argument("query")
+    search_parser.add_argument("paths")
 
     render_parser = subparsers.add_parser("render")
     render_parser.add_argument("template")
@@ -103,7 +119,7 @@ def main() -> None:
             dump(args.database, args.output)
 
         case "search":
-            search(args.database, args.query)
+            search(args.query, args.paths)
 
         case "render":
             render(args.template, args.vars)
