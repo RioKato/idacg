@@ -84,9 +84,16 @@ def dump() -> tuple[list[Function], set[tuple[str, str]]]:
     return funcs, calls
 
 
-def apply_til(til: str):
-    ida_typeinf.del_til(til)
-    result = ida_typeinf.add_til(til, ida_typeinf.ADDTIL_SILENT)
+def apply_til(path: str):
+    til = ida_typeinf.load_til(path)
+
+    if til is None:
+        raise RuntimeError("failed to load type library")
+
+    name = til.name
+    ida_typeinf.free_til(til)
+    ida_typeinf.del_til(name)
+    result = ida_typeinf.add_til(path, ida_typeinf.ADDTIL_SILENT)
 
     if result == ida_typeinf.ADDTIL_FAILED:
         raise RuntimeError("failed to apply type library")
