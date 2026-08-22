@@ -71,7 +71,12 @@ def search(query: Query, source: str) -> Iterator[dict[str, str | int | None]]:
                     match node.type:
                         case "string_literal":
                             text = source[node.start_byte : node.end_byte].decode()
-                            result[name] = json.loads(text)
+
+                            try:
+                                result[name] = json.loads(text)
+                            except json.JSONDecodeError:
+                                result[name] = None
+
                         case "number_literal":
                             text = source[node.start_byte : node.end_byte].decode()
 
