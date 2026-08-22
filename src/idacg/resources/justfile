@@ -3,9 +3,11 @@ set working-directory := justfile_directory()
 
 rootfs := "rootfs"
 dumps := "dumps"
-targets := "targets.txt"
-types := "types.h"
-til := "types.til"
+config := "idacg"
+
+targets := config / "targets.txt"
+types := config / "types.h"
+til := config / "types.til"
 
 dump:
     grep -vE '^[[:space:]]*(#|$)' "{{targets}}" | \
