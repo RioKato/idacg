@@ -6,12 +6,12 @@ dumps := "dumps"
 targets := "targets.txt"
 
 dump:
+    grep -vE '^[[:space:]]*(#|$)' "{{targets}}" | \
     while IFS= read -r target; do \
-        [[ -z "$target" || "$target" == \#* ]] && continue; \
         out="{{dumps}}/$$target"; \
         mkdir -p "$$(dirname "$$out")"; \
         idacg dump "{{rootfs}}/$$target" "$$out"; \
-    done < "{{targets}}"
+    done
 
 import:
     idacg render import \
@@ -19,4 +19,5 @@ import:
         calls='@{{dumps}}/**/*.call.jsonl' \
     | cypher-shell
 
-all: dump import
+search query:
+    idacg search '{{dumps}}/**/*.func.jsonl' {{quote(query)}}
