@@ -4,7 +4,7 @@ UNWIND {{ sinks | cypher }} AS t
 MATCH (src:Function {id: s.id})
 MATCH (sink:Function {id: t.id})
 
-MATCH p = (src)-[:CALLS|RESOLVE*1..{{ depth }}]->(sink)
+MATCH p = (src)-[:CALL|RESOLVE*1..{{ depth }}]->(sink)
 
 WHERE NONE(
   n IN nodes(p)
