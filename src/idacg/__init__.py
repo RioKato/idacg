@@ -83,7 +83,7 @@ def main() -> None:
     render_parser.add_argument("template")
     render_parser.add_argument("vars", nargs="*")
 
-    show_parser = subparsers.add_parser("show")
+    subparsers.add_parser("show")
 
     args = parser.parse_args()
 
