@@ -10,9 +10,6 @@ import ida_xref
 
 from contextlib import contextmanager, suppress
 from dataclasses import dataclass
-from typing import Iterator
-
-from . import searcher
 
 
 @contextmanager
