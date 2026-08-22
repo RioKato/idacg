@@ -40,6 +40,14 @@ def dump(database: str, output: str):
             jsonl.write(fd, dict(src=src, dst=dst))
 
 
+def type_(database: str, til: str):
+    database = Path(database).resolve()
+    database = str(database)
+
+    with bridge.use_database(database):
+        bridge.apply_til(til)
+
+
 def search(query: str, paths: str):
     query = searcher.compile(query)
 
@@ -99,6 +107,10 @@ def main() -> None:
         dump_parser.add_argument("database")
         dump_parser.add_argument("output")
 
+        type_parser = subparsers.add_parser("type")
+        type_parser.add_argument("database")
+        type_parser.add_argument("til")
+
     search_parser = subparsers.add_parser("search")
     search_parser.add_argument("paths")
     search_parser.add_argument("query")
@@ -117,6 +129,9 @@ def main() -> None:
 
         case "dump":
             dump(args.database, args.output)
+
+        case "type":
+            type_(args.database, args.til)
 
         case "search":
             search(args.query, args.paths)

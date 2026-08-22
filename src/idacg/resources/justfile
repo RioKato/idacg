@@ -4,6 +4,8 @@ set working-directory := justfile_directory()
 rootfs := "rootfs"
 dumps := "dumps"
 targets := "targets.txt"
+types := "types.h"
+til := "types.til"
 
 dump:
     grep -vE '^[[:space:]]*(#|$)' "{{targets}}" | \
@@ -21,3 +23,10 @@ import:
 
 search query:
     idacg search '{{dumps}}/**/*.func.jsonl' {{quote(query)}}
+
+type:
+    tilib -c -h"{{types}}" "{{til}}"
+    grep -vE '^[[:space:]]*(#|$)' "{{targets}}" | \
+    while IFS= read -r target; do \
+        idacg type "{{rootfs}}/$$target" "{{til}}"; \
+    done

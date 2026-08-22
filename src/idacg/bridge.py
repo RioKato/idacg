@@ -6,6 +6,7 @@ import ida_funcs
 import ida_hexrays
 import ida_idaapi
 import ida_nalt
+import ida_typeinf
 import ida_xref
 
 from contextlib import contextmanager, suppress
@@ -81,3 +82,11 @@ def dump() -> tuple[list[Function], set[tuple[str, str]]]:
             calls.add((generator.generate(caller), calleef.id))
 
     return funcs, calls
+
+
+def apply_til(til: str):
+    ida_typeinf.del_til(til)
+    result = ida_typeinf.add_til(til, ida_typeinf.ADDTIL_SILENT)
+
+    if result == ida_typeinf.ADDTIL_FAILED:
+        raise RuntimeError("failed to apply type library")
