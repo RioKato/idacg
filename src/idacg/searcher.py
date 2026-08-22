@@ -43,10 +43,10 @@ class ToTreeSitterQuery(Transformer):
     def call(self, items):
         name = str(items[0])
         args = items[1] if len(items) > 1 else []
-        args_query = " ".join(args)
+        args = " ".join(args)
         cap = f"@__func{self.counter}"
         self.counter += 1
-        return f'(call_expression function: (identifier) {cap} arguments: (argument_list {args_query}) (#eq? {cap} "{name}"))'
+        return f'(call_expression function: (identifier) {cap} arguments: (argument_list {args}) (#eq? {cap} "{name}"))'
 
 
 def compile(dsl: str) -> Query:
