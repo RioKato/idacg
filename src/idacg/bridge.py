@@ -4,6 +4,7 @@ import idautils
 import ida_auto
 import ida_funcs
 import ida_hexrays
+import ida_idaapi
 import ida_nalt
 import ida_xref
 
