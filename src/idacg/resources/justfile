@@ -1,0 +1,22 @@
+set shell := ["bash", "-cu"]
+set working-directory := justfile_directory()
+
+rootfs := "rootfs"
+dumps := "dumps"
+targets := "targets.txt"
+
+dump:
+    while IFS= read -r target; do \
+        [[ -z "$target" || "$target" == \#* ]] && continue; \
+        out="{{dumps}}/$$target"; \
+        mkdir -p "$$(dirname "$$out")"; \
+        idacg dump "{{rootfs}}/$$target" "$$out"; \
+    done < "{{targets}}"
+
+import:
+    idacg render import \
+        functions='@{{dumps}}/**/*.func.jsonl' \
+        calls='@{{dumps}}/**/*.call.jsonl' \
+    | cypher-shell
+
+all: dump import

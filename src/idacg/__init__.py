@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 from dataclasses import asdict
 from glob import iglob
+from importlib.resources import files
 import json
 from pathlib import Path
 
@@ -10,6 +11,16 @@ except ImportError:
     bridge = None
 
 from . import renderer
+
+
+def init():
+    dst = Path("justfile")
+
+    if dst.exists():
+        raise FileExistsError(dst)
+
+    src = files("idacg").joinpath("resources/justfile")
+    dst.write_text(src.read_text())
 
 
 def dump(database: str, output: str):
@@ -78,6 +89,8 @@ def main() -> None:
     parser = ArgumentParser()
     subparsers = parser.add_subparsers(dest="command")
 
+    subparsers.add_parser("init")
+
     if bridge:
         dump_parser = subparsers.add_parser("dump")
         dump_parser.add_argument("database")
@@ -96,6 +109,9 @@ def main() -> None:
     args = parser.parse_args()
 
     match args.command:
+        case "init":
+            init()
+
         case "dump":
             dump(args.database, args.output)
 
