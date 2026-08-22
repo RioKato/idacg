@@ -100,8 +100,8 @@ def main() -> None:
         dump_parser.add_argument("output")
 
     search_parser = subparsers.add_parser("search")
-    search_parser.add_argument("query")
     search_parser.add_argument("paths")
+    search_parser.add_argument("query")
 
     render_parser = subparsers.add_parser("render")
     render_parser.add_argument("template")
