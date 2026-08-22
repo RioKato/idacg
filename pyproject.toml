@@ -1,7 +1,7 @@
 [project]
 name = "idacg"
 version = "0.1.0"
-description = "Add your description here"
+description = "A small toolkit for analyzing IDA Pro decompilation results and cross-binary call graphs."
 readme = "README.md"
 authors = [
     { name = "rio", email = "rio@kato.com" }
