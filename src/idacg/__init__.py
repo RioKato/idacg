@@ -43,6 +43,8 @@ def dump(database: str, output: str):
 def type_(database: str, til: str):
     database = Path(database).resolve()
     database = str(database)
+    til = Path(til).resolve()
+    til = str(til)
 
     with bridge.use_database(database):
         bridge.apply_til(til)
