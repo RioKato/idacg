@@ -10,8 +10,7 @@ try:
 except ImportError:
     bridge = None
 
-from . import renderer
-from . import searcher
+from . import jsonl, renderer, searcher
 
 
 def init():
@@ -33,13 +32,11 @@ def dump(database: str, output: str):
 
     with open(f"{output}.func.jsonl", "w") as fd:
         for func in funcs:
-            line = json.dumps(asdict(func))
-            fd.write(f"{line}\n")
+            jsonl.write(fd, asdict(func))
 
     with open(f"{output}.call.jsonl", "w") as fd:
         for src, dst in calls:
-            line = json.dumps(dict(src=src, dst=dst))
-            fd.write(f"{line}\n")
+            jsonl.write(fd, dict(src=src, dst=dst))
 
 
 def search(database: str, query: str):
@@ -60,13 +57,8 @@ def render(template: str, vars: list[str]):
 
             for path in iglob(value[1:], recursive=True):
                 with open(path) as fd:
-                    for line in fd:
-                        line = line.strip()
-
-                        if not line:
-                            continue
-
-                        obj.append(json.loads(line))
+                    for e in jsonl.reader(fd):
+                        obj.append(e)
         else:
             obj = json.loads(value)
 
